@@ -141,10 +141,10 @@
         <!-- Mobile Menu Dropdown -->
         <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 space-y-2 shadow-lg">
             <button onclick="showPage('home')" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded">Home</button>
-            <button onclick="showPage('member1')" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded">Transportation</button>
-            <button onclick="showPage('member2')" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded">Energy</button>
-            <button onclick="showPage('member3')" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded">Planning</button>
-            <button onclick="showPage('member4')" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded">Services</button>
+            <button onclick="showPage('member1')" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded">Chinmay</button>
+            <button onclick="showPage('member2')" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded">Amogh</button>
+            <button onclick="showPage('member3')" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded">Subhash</button>
+            <button onclick="showPage('member4')" class="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded">Abhinav</button>
         </div>
     </nav>
 
@@ -868,175 +868,954 @@
             "Shortest Path Navigation": {
                 problem: "Electric Vehicles (EVs) suffer from range anxiety. In a city with dynamic traffic conditions, finding the shortest path based on distance alone is insufficient. We need to find the quickest path from a start point to an end point in a city graph where edge weights represent real-time traffic delay, ensuring optimal battery usage and time efficiency.",
                 solution: "We model the city as a weighted directed graph where intersections are nodes and roads are edges. Dijkstra's Algorithm is the optimal choice here because edge weights (time delay) are non-negative. We use a Priority Queue to always explore the shortest known path first, expanding layer by layer. This guarantees finding the shortest path with a time complexity of O(E log V).",
-                code: `void dijkstra(int start, int end, int n, vector<vector<pair<int, int>>> &adj) {
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-    vector<int> dist(n, INT_MAX);
+                code: `#include<iostream>
+#include<algorithm>
+using namespace std;
 
-    dist[start] = 0;
-    pq.push({0, start});
+class dijkstra
+{
+public:
+    int path[4];
+    int dist[4];
+    int visited[4];
+    void initialise(int cost[4][4], int source);
+    int minimum();
+    void updation(int cost[4][4]);
+    void shortest_path(int cost[4][4],int source);
+    void print(int source);
+};
 
-    while (!pq.empty()) {
-        int d = pq.top().first;
-        int u = pq.top().second;
-        pq.pop();
+void dijkstra::initialise(int cost[4][4],int source)
+{
+    int i;
+    for(i=0;i<4;i++)
+    {
+        path[i]=source;
+        dist[i] = (cost[source][i] == 0) ? 10000000 : cost[source][i];
+        visited[i]=0;
+    }
+    visited[source]=1;
+    dist[source]=0;
+}
 
-        if (d > dist[u]) continue;
-        if (u == end) return; 
-
-        for (auto &edge : adj[u]) {
-            int v = edge.first;
-            int weight = edge.second;
-            if (dist[u] + weight < dist[v]) {
-                dist[v] = dist[u] + weight;
-                pq.push({dist[v], v});
-            }
+int dijkstra::minimum()
+{
+    int mini=10000000;
+    int minindex=-1;
+    for (int i=0;i<4;i++)
+    {
+        if (!visited[i] && dist[i]<mini)
+        {
+            mini=dist[i];
+            minindex=i;
         }
     }
+    return minindex;
+}
+
+void dijkstra::updation(int cost[4][4])
+{
+    int u=minimum();
+    if (u==-1)
+        return;
+    visited[u]=1;
+    for (int i=0;i<4;i++)
+    {
+        if (visited[i]==0)
+        {
+        dist[i]=min(dist[i],dist[u]+cost[u][i]);
+        if (dist[i]==dist[u]+cost[u][i])
+            path[i]=u;
+        }
+    }
+
+}
+void dijkstra::shortest_path(int cost[4][4],int source)
+{
+    initialise(cost,source);
+    for (int i=0;i<3;i++)
+        updation(cost);
+}
+
+void dijkstra::print(int source)
+{
+    for (int i = 0; i < 4; i++)
+    {
+    if (i != source)
+    {
+    cout << "Shortest path from " << source << " to " << i << " is " << dist[i] << " through path: ";
+    int j = i;
+    cout << j;
+    while (path[j] != source)
+        {
+            cout << " <- " << path[j];
+            j = path[j];
+        }
+    cout << " <- " << source << endl;
+    }
+    }
+}
+
+int main()
+{
+int v;
+int source;
+int cost[4][4];
+cout<<"Enter the source vertex: ";
+cin>>source;
+cout<<"Enter the cost matrix\n";
+for (int i=0;i<4;i++)
+{
+    for (int j=0;j<4;j++)
+    {
+       cin>>cost[i][j];
+    }
+}
+dijkstra Dijkstra;
+Dijkstra.shortest_path(cost, source);
+Dijkstra.print(source);
+return 0;
 }`
             },
             "Max Traffic Flow": {
                 problem: "During rush hour, specific highways feeding into the city center get clogged. We need to calculate the theoretical maximum number of vehicles that can travel from the residential suburbs (Source) to the central business district (Sink) without exceeding the capacity of any individual road segment.",
                 solution: "This is a classic Max-Flow Min-Cut problem. We use the Ford-Fulkerson algorithm (specifically the Edmonds-Karp implementation using BFS) to find augmenting paths in the residual graph. As long as there is a path from source to sink with available capacity, we push more flow. The algorithm terminates when no such path exists, giving us the max flow.",
-                code: `int bfs(int s, int t, vector<int>& parent, vector<vector<int>>& capacity, vector<vector<int>>& adj) {
-    fill(parent.begin(), parent.end(), -1);
-    parent[s] = -2;
-    queue<pair<int, int>> q;
-    q.push({s, INT_MAX});
+                code: `// C++ program for implementation of Ford Fulkerson
+// algorithm
+#include <iostream>
+#include <limits.h>
+#include <queue>
+#include <string.h>
+using namespace std;
 
+// Number of vertices in given graph
+#define V 6
+
+/* Returns true if there is a path from source 's' to sink
+  't' in residual graph. Also fills parent[] to store the
+  path */
+bool bfs(int rGraph[V][V], int s, int t, int parent[])
+{
+    // Create a visited array and mark all vertices as not
+    // visited
+    bool visited[V];
+    memset(visited, 0, sizeof(visited));
+
+    // Create a queue, enqueue source vertex and mark source
+    // vertex as visited
+    queue<int> q;
+    q.push(s);
+    visited[s] = true;
+    parent[s] = -1;
+
+    // Standard BFS Loop
     while (!q.empty()) {
-        int u = q.front().first;
-        int flow = q.front().second;
+        int u = q.front();
         q.pop();
 
-        for (int v : adj[u]) {
-            if (parent[v] == -1 && capacity[u][v] > 0) {
+        for (int v = 0; v < V; v++) {
+            if (visited[v] == false && rGraph[u][v] > 0) {
+                // If we find a connection to the sink node,
+                // then there is no point in BFS anymore We
+                // just have to set its parent and can return
+                // true
+                if (v == t) {
+                    parent[v] = u;
+                    return true;
+                }
+                q.push(v);
                 parent[v] = u;
-                int new_flow = min(flow, capacity[u][v]);
-                if (v == t) return new_flow;
-                q.push({v, new_flow});
+                visited[v] = true;
             }
         }
     }
+
+    // We didn't reach sink in BFS starting from source, so
+    // return false
+    return false;
+}
+
+// Returns the maximum flow from s to t in the given graph
+int fordFulkerson(int graph[V][V], int s, int t)
+{
+    int u, v;
+
+    // Create a residual graph and fill the residual graph
+    // with given capacities in the original graph as
+    // residual capacities in residual graph
+    int rGraph[V]
+              [V]; // Residual graph where rGraph[i][j]
+                   // indicates residual capacity of edge
+                   // from i to j (if there is an edge. If
+                   // rGraph[i][j] is 0, then there is not)
+    for (u = 0; u < V; u++)
+        for (v = 0; v < V; v++)
+            rGraph[u][v] = graph[u][v];
+
+    int parent[V]; // This array is filled by BFS and to
+                   // store path
+
+    int max_flow = 0; // There is no flow initially
+
+    // Augment the flow while there is path from source to
+    // sink
+    while (bfs(rGraph, s, t, parent)) {
+        // Find minimum residual capacity of the edges along
+        // the path filled by BFS. Or we can say find the
+        // maximum flow through the path found.
+        int path_flow = INT_MAX;
+        for (v = t; v != s; v = parent[v]) {
+            u = parent[v];
+            path_flow = min(path_flow, rGraph[u][v]);
+        }
+
+        // update residual capacities of the edges and
+        // reverse edges along the path
+        for (v = t; v != s; v = parent[v]) {
+            u = parent[v];
+            rGraph[u][v] -= path_flow;
+            rGraph[v][u] += path_flow;
+        }
+
+        // Add path flow to overall flow
+        max_flow += path_flow;
+    }
+
+    // Return the overall flow
+    return max_flow;
+}
+
+// Driver program to test above functions
+int main()
+{
+    // Let us create a graph shown in the above example
+    int graph[V][V]
+        = { { 0, 16, 13, 0, 0, 0 }, { 0, 0, 10, 12, 0, 0 },
+            { 0, 4, 0, 0, 14, 0 },  { 0, 0, 9, 0, 0, 20 },
+            { 0, 0, 0, 7, 0, 4 },   { 0, 0, 0, 0, 0, 0 } };
+
+    cout << "The maximum possible flow is "
+         << fordFulkerson(graph, 0, 5);
+
     return 0;
 }`
             },
             "Subway Connectivity Check": {
                 problem: "The subway system must remain fully connected for efficient transit. If a maintenance event isolates a station or a group of stations from the central hub, passengers could be stranded. We need an automated way to verify that every station is reachable from the main hub.",
                 solution: "We perform a Breadth-First Search (BFS) or Depth-First Search (DFS) starting from the central hub (node 0). As we traverse, we mark every reached node as 'visited'. After the traversal is complete, we check if the count of visited nodes equals the total number of stations. If not, the graph is disconnected.",
-                code: `bool isConnected(int n, vector<vector<int>>& adj) {
-    vector<bool> visited(n, false);
-    queue<int> q;
-    q.push(0); // Start from hub
-    visited[0] = true;
-    int count = 0;
+                code: `#include<iostream>
+#include <list>
+using namespace std;
 
-    while(!q.empty()){
-        int u = q.front(); q.pop();
-        count++;
-        for(int v : adj[u]){
-            if(!visited[v]){
-                visited[v] = true;
-                q.push(v);
-            }
+class Graph {
+    int V;
+    list <int> * adj;
+    void DFSUtil(int v, bool visited[]);  // A function used by DFS
+    
+    
+public:
+    Graph(int V);
+    void addEdge(int V, int w);
+    void DFS();    // prints DFS traversal of the complete graph
+    void BFS();
+    
+};
+
+Graph::Graph(int V){
+    this->V = V;
+    adj = new list<int>[V];
+}
+
+void Graph::addEdge(int V, int w) {
+    this->adj[V].push_back(w); // push back to add to the linked list
+}
+
+void Graph::DFSUtil(int v , bool visited[]) {
+    visited[v] = true;
+    cout << v << " ";
+    
+    list<int>:: iterator i;
+    for (i = adj[v].begin(); i != adj[v].end(); ++i) {
+        if (!visited[*i]) {
+            DFSUtil(*i, visited);
         }
     }
-    return count == n;
+}
+
+void Graph::DFS(){
+    
+    // Mark all the vertices as not visited
+    bool *visited = new bool[V];
+    for(int i = 0; i < V; i++)
+        visited[i] = false;
+    
+    // Call the recursive helper function to print DFS traversal
+    // starting from all vertices one by one
+    for(int i = 0; i < V; i++)
+        if(visited[i] == false)
+            DFSUtil(i, visited);
+    
+}
+
+// To implement
+void Graph::BFS(){
+    queue <int> myQueue;
+    bool * visited = new bool[V];
+    for(int i = 0; i < V; i++)
+        visited[i] = false;
+    
+    if (visited[0] == false) {
+        
+        myQueue.push(0);
+        visited[0] = true;
+        while (!myQueue.empty()) {
+            list<int>::iterator i;
+            int node = myQueue.front();
+            for (i = adj[node].begin(); i != adj[node].end(); i++) {
+                if (!visited[*i]) {
+                    cout << *i <<endl;
+                    visited[*i] = true;
+                    myQueue.push(*i);
+                }
+
+            }
+            myQueue.pop();
+        }
+    }   
 }`
             },
              "Deadlock Prevention": {
                 problem: "In a futuristic grid of autonomous vehicles, vehicles communicate to reserve intersections. If four vehicles arrive at a 4-way stop simultaneously and each waits for the one on its right, a deadlock occurs. We need to detect these circular wait conditions.",
                 solution: "We model the resource allocation (intersections) as a directed graph. A deadlock corresponds to a cycle in this graph. We use Depth First Search (DFS) with a recursion stack tracking the current traversal path. If we encounter a node that is currently in the recursion stack, a back-edge exists, confirming a cycle.",
-                code: `bool isCyclicUtil(int v, vector<bool> &visited, vector<bool> &recStack, vector<vector<int>> &adj) {
-    if(!visited[v]) {
-        visited[v] = true;
-        recStack[v] = true;
-        for(int i : adj[v]) {
-            if ( !visited[i] && isCyclicUtil(i, visited, recStack, adj) )
-                return true;
-            else if (recStack[i])
-                return true;
+                code: `#include <bits/stdc++.h>
+using namespace std;
+
+class Graph {
+    int V; // number of vertices
+    vector<vector<int>> adj; // adjacency list
+
+    void dfsUtil(int u, vector<bool>& visited, vector<int>& recStack) {
+        // Mark current node as visited
+        visited[u] = true;
+        recStack.push_back(u); // add to recursion stack
+
+        cout << "DFS Path so far: ";
+        for (int node : recStack) cout << node << " ";
+        cout << "\n";
+
+        // Explore neighbors
+        for (int v : adj[u]) {
+            if (!visited[v]) {
+                dfsUtil(v, visited, recStack);
+            }
+            else {
+                // If v is already in recursion stack, cycle detected
+                if (find(recStack.begin(), recStack.end(), v) != recStack.end()) {
+                    cout << "Cycle detected involving node " << v << "\n";
+                }
+            }
         }
+
+        // Backtrack: remove from recursion stack
+        recStack.pop_back();
     }
-    recStack[v] = false;
-    return false;
+
+public:
+    Graph(int V) {
+        this->V = V;
+        adj.resize(V);
+    }
+
+    void addEdge(int u, int v) {
+        adj[u].push_back(v);
+    }
+
+    void DFS(int start) {
+        vector<bool> visited(V, false);
+        vector<int> recStack; // recursion stack path
+        dfsUtil(start, visited, recStack);
+    }
+};
+
+int main() {
+    Graph g(6);
+    g.addEdge(0, 1);
+    g.addEdge(0, 2);
+    g.addEdge(1, 3);
+    g.addEdge(2, 4);
+    g.addEdge(3, 5);
+    g.addEdge(4, 5);
+    g.addEdge(5, 0); // back edge to create a cycle
+
+    cout << "Starting DFS from node 0:\n";
+    g.DFS(0);
+
+    return 0;
 }`
             },
              "Road Network Maintenance": {
                 problem: "Roads are frequently closed for maintenance or due to accidents. We need a system that can quickly determine if two specific districts are still connected via some path, or if they have been separated into disjoint components.",
                 solution: "The Disjoint Set Union (DSU) or Union-Find data structure is ideal here. It maintains a collection of disjoint sets. Operations like `union` (merging two sets when a road is open) and `find` (checking which set a district belongs to) are nearly constant time, O(alpha(n)). This is much faster than running BFS/DFS for every query.",
-                code: `struct DSU {
-    vector<int> parent;
-    int find(int i) {
-        if (parent[i] == i) return i;
-        return parent[i] = find(parent[i]); // Path compression
+                code: `#include <bits/stdc++.h>
+using namespace std;
+
+class DSU {
+    vector<int> parent, rank;
+public:
+    DSU(int n) {
+        parent.resize(n);
+        rank.resize(n, 0);
+        for (int i = 0; i < n; i++) parent[i] = i;
     }
-    void unite(int i, int j) {
-        int root_i = find(i);
-        int root_j = find(j);
-        if (root_i != root_j) parent[root_i] = root_j;
+
+    // Find with path compression
+    int find(int x) {
+        if (parent[x] != x)
+            parent[x] = find(parent[x]);
+        return parent[x];
     }
-};`
+
+    // Union by rank
+    void unite(int x, int y) {
+        int px = find(x);
+        int py = find(y);
+        if (px == py) return;
+
+        if (rank[px] < rank[py]) {
+            parent[px] = py;
+        } else if (rank[px] > rank[py]) {
+            parent[py] = px;
+        } else {
+            parent[py] = px;
+            rank[px]++;
+        }
+    }
+
+    // Check if two nodes are connected
+    bool connected(int x, int y) {
+        return find(x) == find(y);
+    }
+};
+
+int main() {
+    int n = 6; // number of districts
+    DSU dsu(n);
+
+    // Add roads (union operations)
+    dsu.unite(0, 1);
+    dsu.unite(1, 2);
+    dsu.unite(3, 4);
+
+    // Queries
+    cout << "Are district 0 and 2 connected? "
+         << (dsu.connected(0, 2) ? "Yes" : "No") << "\n";
+
+    cout << "Are district 0 and 3 connected? "
+         << (dsu.connected(0, 3) ? "Yes" : "No") << "\n";
+
+    // Add a road between 2 and 3
+    dsu.unite(2, 3);
+
+    cout << "After adding road (2-3), are district 0 and 3 connected? "
+         << (dsu.connected(0, 3) ? "Yes" : "No") << "\n";
+
+    return 0;
+}`
             },
              "Critical Bridge Identification": {
                 problem: "To ensure resilience, we must identify 'critical' roads. These are edges in the graph that, if removed or destroyed, would increase the number of connected components (i.e., split the city in two).",
                 solution: "We use Tarjan's Bridge-Finding algorithm. It performs a DFS traversal and maintains two arrays: `discovery_time` and `low_link_value`. An edge (u, v) is a bridge if `low[v] > disc[u]`, meaning there is no back-edge from the subtree of v to u or any ancestor of u.",
-                code: `void bridgeUtil(int u, vector<int>& disc, vector<int>& low, int& time, vector<vector<int>>& adj) {
-    disc[u] = low[u] = ++time;
-    for (int v : adj[u]) {
-        if (v == parent[u]) continue;
-        if (disc[v]) {
-            low[u] = min(low[u], disc[v]);
-        } else {
-            parent[v] = u;
-            bridgeUtil(v, disc, low, time, adj);
-            low[u] = min(low[u], low[v]);
-            if (low[v] > disc[u]) cout << u << "-" << v << " is a bridge\\n";
+                code: `#include <bits/stdc++.h>
+using namespace std;
+
+class Graph {
+    int V; // number of vertices
+    vector<vector<int>> adj;
+    int timer;
+
+    void dfs(int u, int parent, vector<int>& disc, vector<int>& low, vector<pair<int,int>>& bridges) {
+        disc[u] = low[u] = ++timer;
+
+        for (int v : adj[u]) {
+            if (v == parent) continue; // skip the edge to parent
+
+            if (disc[v] == -1) {
+                // Tree edge
+                dfs(v, u, disc, low, bridges);
+                low[u] = min(low[u], low[v]);
+
+                // Bridge condition
+                if (low[v] > disc[u]) {
+                    bridges.push_back({u, v});
+                }
+            } else {
+                // Back edge
+                low[u] = min(low[u], disc[v]);
+            }
         }
     }
+
+public:
+    Graph(int V) {
+        this->V = V;
+        adj.resize(V);
+        timer = 0;
+    }
+
+    void addEdge(int u, int v) {
+        adj[u].push_back(v);
+        adj[v].push_back(u); // undirected graph
+    }
+
+    vector<pair<int,int>> findBridges() {
+        vector<int> disc(V, -1), low(V, -1);
+        vector<pair<int,int>> bridges;
+
+        for (int i = 0; i < V; i++) {
+            if (disc[i] == -1) {
+                dfs(i, -1, disc, low, bridges);
+            }
+        }
+        return bridges;
+    }
+};
+
+int main() {
+    int V = 5;
+    Graph g(V);
+
+    g.addEdge(0, 1);
+    g.addEdge(1, 2);
+    g.addEdge(2, 0);
+    g.addEdge(1, 3);
+    g.addEdge(3, 4);
+
+    vector<pair<int,int>> bridges = g.findBridges();
+
+    cout << "Bridges in the graph:\n";
+    for (auto &edge : bridges) {
+        cout << edge.first << " - " << edge.second << "\n";
+    }
+
+    return 0;
 }`
             },
              "Traffic Light Sync": {
                 problem: "We have vehicle count data for hundreds of intersections. To improve flow, we want to prioritize green light duration for the busiest intersections. We need to rank them efficiently.",
                 solution: "Sorting algorithms like Merge Sort or Quick Sort are used. Merge Sort O(n log n) is preferred if stability (preserving original order of equal elements) is important. This allows us to process the top K busiest intersections efficiently.",
-                code: `void merge(vector<int>& arr, int l, int m, int r) {
-    // Merge two sorted subarrays arr[l..m] and arr[m+1..r]
-    // ... standard merge logic ...
+                code: `#include <bits/stdc++.h>
+using namespace std;
+
+// ---------- Bubble Sort ----------
+void bubbleSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 0; i < n-1; i++) {
+        for (int j = 0; j < n-i-1; j++) {
+            if (arr[j] > arr[j+1]) {
+                swap(arr[j], arr[j+1]);
+            }
+        }
+    }
+}
+
+// ---------- Insertion Sort ----------
+void insertionSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j+1] = arr[j];
+            j--;
+        }
+        arr[j+1] = key;
+    }
+}
+
+// ---------- Merge Sort ----------
+void merge(vector<int>& arr, int l, int m, int r) {
+    int n1 = m - l + 1;
+    int n2 = r - m;
+    vector<int> L(n1), R(n2);
+
+    for (int i = 0; i < n1; i++) L[i] = arr[l+i];
+    for (int j = 0; j < n2; j++) R[j] = arr[m+1+j];
+
+    int i = 0, j = 0, k = l;
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) arr[k++] = L[i++];
+        else arr[k++] = R[j++];
+    }
+    while (i < n1) arr[k++] = L[i++];
+    while (j < n2) arr[k++] = R[j++];
+}
+
+void mergeSort(vector<int>& arr, int l, int r) {
+    if (l < r) {
+        int m = l + (r-l)/2;
+        mergeSort(arr, l, m);
+        mergeSort(arr, m+1, r);
+        merge(arr, l, m, r);
+    }
+}
+
+// ---------- Quick Sort ----------
+int partition(vector<int>& arr, int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i+1], arr[high]);
+    return i+1;
+}
+
+void quickSort(vector<int>& arr, int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        quickSort(arr, low, pi-1);
+        quickSort(arr, pi+1, high);
+    }
+}
+
+// ---------- Heap Sort ----------
+void heapify(vector<int>& arr, int n, int i) {
+    int largest = i;
+    int l = 2*i + 1;
+    int r = 2*i + 2;
+
+    if (l < n && arr[l] > arr[largest]) largest = l;
+    if (r < n && arr[r] > arr[largest]) largest = r;
+
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+        heapify(arr, n, largest);
+    }
+}
+
+void heapSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = n/2 - 1; i >= 0; i--) heapify(arr, n, i);
+    for (int i = n-1; i > 0; i--) {
+        swap(arr[0], arr[i]);
+        heapify(arr, i, 0);
+    }
+}
+
+// ---------- Utility ----------
+void printArray(const vector<int>& arr) {
+    for (int x : arr) cout << x << " ";
+    cout << "\n";
+}
+
+int main() {
+    vector<int> arr = {64, 25, 12, 22, 11};
+
+    cout << "Original array: ";
+    printArray(arr);
+
+    // Bubble Sort
+    vector<int> b = arr;
+    bubbleSort(b);
+    cout << "Bubble Sort: ";
+    printArray(b);
+
+    // Insertion Sort
+    vector<int> ins = arr;
+    insertionSort(ins);
+    cout << "Insertion Sort: ";
+    printArray(ins);
+
+    // Merge Sort
+    vector<int> m = arr;
+    mergeSort(m, 0, m.size()-1);
+    cout << "Merge Sort: ";
+    printArray(m);
+
+    // Quick Sort
+    vector<int> q = arr;
+    quickSort(q, 0, q.size()-1);
+    cout << "Quick Sort: ";
+    printArray(q);
+
+    // Heap Sort
+    vector<int> h = arr;
+    heapSort(h);
+    cout << "Heap Sort: ";
+    printArray(h);
+
+    return 0;
 }`
             },
              "A* Search": {
                 problem: "Drone delivery requires 3D pathfinding. Unlike cars, drones can move diagonally and must avoid no-fly zones. We need a path that is not just short but also computationally efficient to calculate in real-time.",
                 solution: "A* (A-Star) Search improves on Dijkstra by using a heuristic function (e.g., Euclidean distance to the destination). This 'guess' guides the algorithm towards the goal, significantly reducing the number of nodes explored compared to a blind search.",
-                code: `double heuristic(Node a, Node b) {
-    return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+                code: `#include <bits/stdc++.h>
+using namespace std;
+
+struct Node {
+    int x, y;
+    int g, h; // g = cost so far, h = heuristic
+    Node* parent;
+
+    Node(int _x, int _y, int _g, int _h, Node* _p = nullptr)
+        : x(_x), y(_y), g(_g), h(_h), parent(_p) {}
+
+    int f() const { return g + h; } // total cost
+};
+
+// Manhattan distance heuristic
+int heuristic(int x1, int y1, int x2, int y2) {
+    return abs(x1 - x2) + abs(y1 - y2);
 }
-// Priority Queue stores nodes with priority = cost_so_far + heuristic`
+
+// Check if position is valid
+bool isValid(int x, int y, int rows, int cols, vector<vector<int>>& grid) {
+    return (x >= 0 && x < rows && y >= 0 && y < cols && grid[x][y] == 0);
+}
+
+// A* Search
+vector<pair<int,int>> aStar(vector<vector<int>>& grid, pair<int,int> start, pair<int,int> goal) {
+    int rows = grid.size(), cols = grid[0].size();
+
+    auto cmp = [](Node* a, Node* b) { return a->f() > b->f(); };
+    priority_queue<Node*, vector<Node*>, decltype(cmp)> openSet(cmp);
+
+    vector<vector<bool>> closed(rows, vector<bool>(cols, false));
+
+    Node* startNode = new Node(start.first, start.second, 0,
+                               heuristic(start.first, start.second, goal.first, goal.second));
+    openSet.push(startNode);
+
+    vector<int> dx = {-1, 1, 0, 0};
+    vector<int> dy = {0, 0, -1, 1};
+
+    while (!openSet.empty()) {
+        Node* current = openSet.top();
+        openSet.pop();
+
+        if (current->x == goal.first && current->y == goal.second) {
+            // reconstruct path
+            vector<pair<int,int>> path;
+            while (current) {
+                path.push_back({current->x, current->y});
+                current = current->parent;
+            }
+            reverse(path.begin(), path.end());
+            return path;
+        }
+
+        closed[current->x][current->y] = true;
+
+        for (int i = 0; i < 4; i++) {
+            int nx = current->x + dx[i];
+            int ny = current->y + dy[i];
+
+            if (isValid(nx, ny, rows, cols, grid) && !closed[nx][ny]) {
+                int gNew = current->g + 1;
+                int hNew = heuristic(nx, ny, goal.first, goal.second);
+                Node* neighbor = new Node(nx, ny, gNew, hNew, current);
+                openSet.push(neighbor);
+            }
+        }
+    }
+
+    return {}; // no path found
+}
+
+int main() {
+    // 0 = free cell, 1 = blocked
+    vector<vector<int>> grid = {
+        {0, 0, 0, 0, 0},
+        {1, 1, 0, 1, 0},
+        {0, 0, 0, 0, 0},
+        {0, 1, 1, 1, 0},
+        {0, 0, 0, 0, 0}
+    };
+
+    pair<int,int> start = {0, 0};
+    pair<int,int> goal = {4, 4};
+
+    vector<pair<int,int>> path = aStar(grid, start, goal);
+
+    if (!path.empty()) {
+        cout << "Path found:\n";
+        for (auto [x, y] : path) {
+            cout << "(" << x << "," << y << ") ";
+        }
+        cout << "\n";
+    } else {
+        cout << "No path found.\n";
+    }
+
+    return 0;
+}`
             },
              "Congestion Monitoring": {
                 problem: "Traffic sensors send data every second. To detect sustained congestion (not just momentary stops), we need to analyze the average traffic density over a rolling window (e.g., the last 5 minutes).",
                 solution: "The Sliding Window technique is used. Instead of re-calculating the sum of the last K elements from scratch every second (O(k*n)), we maintain a running sum. When the window slides, we subtract the element leaving and add the element entering (O(n)).",
-                code: `bool checkCongestion(vector<int>& data, int k, int threshold) {
-    int sum = 0;
-    for(int i=0; i<k; i++) sum += data[i];
-    if(sum/k > threshold) return true;
-    for(int i=k; i<data.size(); i++) {
-        sum += data[i] - data[i-k];
-        if(sum/k > threshold) return true;
+                code: `#include <bits/stdc++.h>
+using namespace std;
+
+class TrafficAnalyzer {
+    int K; // window size (e.g., 5 minutes = 300 seconds)
+    queue<int> window;
+    long long sum; // running sum
+
+public:
+    TrafficAnalyzer(int k) : K(k), sum(0) {}
+
+    // Add new traffic density reading
+    void addReading(int density) {
+        window.push(density);
+        sum += density;
+
+        // If window exceeds size K, remove oldest
+        if ((int)window.size() > K) {
+            sum -= window.front();
+            window.pop();
+        }
     }
-    return false;
+
+    // Get average density over last K readings
+    double getAverage() {
+        if (window.empty()) return 0.0;
+        return (double)sum / window.size();
+    }
+};
+
+int main() {
+    int K = 5; // rolling window size (example: last 5 readings)
+    TrafficAnalyzer analyzer(K);
+
+    vector<int> readings = {10, 20, 30, 40, 50, 60, 70};
+
+    for (int r : readings) {
+        analyzer.addReading(r);
+        cout << "Added: " << r 
+             << " | Current Average: " << analyzer.getAverage() << "\n";
+    }
+
+    return 0;
 }`
             },
              "EV Charging Stations": {
                 problem: "We have a limited budget to build charging stations but want to cover the maximum number of unique road segments. This is an optimization problem.",
                 solution: "This is a variant of the Set Cover Problem, which is NP-Hard. We use a Greedy Approximation algorithm. At each step, we pick the station location that covers the highest number of *currently uncovered* road segments, repeating until budget is exhausted or all roads are covered.",
-                code: `while(universe_not_empty) {
-    pick station that covers most uncovered elements;
-    add station to solution;
-    remove covered elements from universe;
+                code: `#include <bits/stdc++.h>
+using namespace std;
+
+// -------------------- Utility Functions --------------------
+
+// Print a set of integers (road segments)
+void printSet(const set<int>& s) {
+    cout << "{ ";
+    for (int x : s) cout << x << " ";
+    cout << "}";
+}
+
+// -------------------- Greedy Set Cover --------------------
+
+struct Station {
+    int id;                 // station identifier
+    set<int> covers;        // road segments this station covers
+};
+
+class ChargingPlanner {
+    int budget;                     // max number of stations we can build
+    vector<Station> stations;       // all candidate stations
+    set<int> allRoads;              // all road segments that need coverage
+
+public:
+    ChargingPlanner(int budget, vector<Station> stations, set<int> allRoads)
+        : budget(budget), stations(stations), allRoads(allRoads) {}
+
+    // Greedy algorithm to select stations
+    vector<int> selectStations() {
+        set<int> covered;           // road segments already covered
+        vector<int> chosenStations; // IDs of selected stations
+
+        // Repeat until budget exhausted or all roads covered
+        for (int step = 0; step < budget && covered.size() < allRoads.size(); step++) {
+            int bestStation = -1;
+            int maxNewCoverage = -1;
+            set<int> newCoverage;
+
+            // Find station with maximum uncovered roads
+            for (auto& st : stations) {
+                set<int> diff;
+                set_difference(st.covers.begin(), st.covers.end(),
+                               covered.begin(), covered.end(),
+                               inserter(diff, diff.begin()));
+
+                if ((int)diff.size() > maxNewCoverage) {
+                    maxNewCoverage = diff.size();
+                    bestStation = st.id;
+                    newCoverage = diff;
+                }
+            }
+
+            if (bestStation == -1) break; // no useful station left
+
+            // Add best station to chosen list
+            chosenStations.push_back(bestStation);
+
+            // Update covered roads
+            covered.insert(newCoverage.begin(), newCoverage.end());
+
+            // Debug output
+            cout << "Step " << step+1 << ": Chose station " << bestStation
+                 << " covering " << maxNewCoverage << " new roads. "
+                 << "Total covered = " << covered.size() << "\n";
+        }
+
+        cout << "\nFinal Covered Roads: ";
+        printSet(allRoads);
+        cout << "\nActually Covered Roads: ";
+        printSet(covered);
+        cout << "\n";
+
+        return chosenStations;
+    }
+};
+
+// -------------------- Main Function --------------------
+
+int main() {
+    // Example road segments: 1..10
+    set<int> allRoads = {1,2,3,4,5,6,7,8,9,10};
+
+    // Candidate stations with coverage sets
+    vector<Station> stations = {
+        {0, {1,2,3}},
+        {1, {2,4,5}},
+        {2, {6,7}},
+        {3, {3,8,9}},
+        {4, {5,7,10}},
+        {5, {1,4,6,8}}
+    };
+
+    int budget = 3; // can build at most 3 stations
+
+    ChargingPlanner planner(budget, stations, allRoads);
+
+    cout << "Running Greedy Approximation for Charging Station Placement...\n\n";
+
+    vector<int> chosen = planner.selectStations();
+
+    cout << "\nChosen Stations: ";
+    for (int id : chosen) cout << id << " ";
+    cout << "\n";
+
+    return 0;
 }`
             },
 
             // --- Amogh's Problems ---
-             "Optimal Power Grid Construction": {
+             "Grid Connectivity": {
                 problem: "We need to physically connect all power substations with high-voltage cables. Copper is expensive, so the goal is to minimize the total length of cable used while keeping the entire grid connected.",
                 solution: "This is a Minimum Spanning Tree (MST) problem. Prim's Algorithm is efficient for dense graphs. It starts with an arbitrary node and greedily adds the shortest edge connecting a node in the tree to a node outside the tree, ensuring no cycles are formed.",
                 code: `int primMST(vector<vector<pair<int, int>>>& adj, int V) {
@@ -1480,7 +2259,6 @@ if(activeIncidents.find(id) == activeIncidents.end()) {
     </script>
 </body>
 </html>
-
 
 
 
