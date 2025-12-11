@@ -810,6 +810,13 @@
             }
         }
 
+         let currentCodeLink = "";
+let currentDatasetLink = "";
+
+function openCodeLink() { window.open(currentCodeLink, "_blank"); }
+function openDatasetLink() { window.open(currentDatasetLink, "_blank"); }
+
+        
         // Initialize Theme
         if (localStorage.theme === 'light' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: light)').matches)) {
              document.documentElement.classList.remove('dark');
@@ -2278,6 +2285,7 @@ if(activeIncidents.find(id) == activeIncidents.end()) {
     </script>
 </body>
 </html>
+
 
 
 
