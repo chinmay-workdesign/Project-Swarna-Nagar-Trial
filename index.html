@@ -845,6 +845,10 @@
                 codeElement.textContent = data.code;
                 delete codeElement.dataset.highlighted; // Reset highlight state
                 hljs.highlightElement(codeElement);
+
+                currentCodeLink = data.codeLink;
+                currentDatasetLink = data.datasetLink;
+
                 
                 document.getElementById('problemModal').classList.add('active');
             } else {
@@ -2259,6 +2263,7 @@ if(activeIncidents.find(id) == activeIncidents.end()) {
     </script>
 </body>
 </html>
+
 
 
 
