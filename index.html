@@ -2131,11 +2131,12 @@ for(e : events) {
 }`
             },
 
-            // --- Abhinav's Problems ---
-             "Emergency Dispatch": {
-                problem: "When an emergency call comes in, assign the nearest available ambulance. Prioritize incidents with higher severity.",
-                solution: "Priority Queue (Min-Heap) for distance or Max-Heap for severity. We store events as `{severity, distance, id}` and pop the top element to dispatch.",
-                code: `struct Event {
+           // --- Abhinav's Problems ---
+const problemDatabase = {
+    "Emergency Dispatch": {
+        problem: "When an emergency call comes in, assign the nearest available ambulance. Prioritize incidents with higher severity.",
+        solution: "Priority Queue (Min-Heap) for distance or Max-Heap for severity. We store events as `{severity, distance, id}` and pop the top element to dispatch.",
+        code: `struct Event {
     int severity;
     int distance;
     bool operator<(const Event& other) const {
@@ -2143,12 +2144,15 @@ for(e : events) {
         return distance > other.distance; // Lower distance second
     }
 };
-priority_queue<Event> pq;`
-            },
-            "Garbage Truck Routing": {
-                problem: "A garbage truck must visit a set of dumpsters and return to base. Minimize distance.",
-                solution: "Traveling Salesperson Problem (TSP). Since N is small for a single truck's route, we can use Dynamic Programming with Bitmasking `dp[mask][last_visited]`.",
-                code: `int tsp(int mask, int pos) {
+priority_queue<Event> pq;`,
+        codeLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/",
+        datasetLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/"
+    },
+
+    "Garbage Truck Routing": {
+        problem: "A garbage truck must visit a set of dumpsters and return to base. Minimize distance.",
+        solution: "Traveling Salesperson Problem (TSP). Since N is small for a single truck's route, we can use Dynamic Programming with Bitmasking `dp[mask][last_visited]`.",
+        code: `int tsp(int mask, int pos) {
     if (mask == VISITED_ALL) return dist[pos][0];
     if (dp[mask][pos] != -1) return dp[mask][pos];
 
@@ -2160,12 +2164,15 @@ priority_queue<Event> pq;`
         }
     }
     return dp[mask][pos] = ans;
-}`
-            },
-            "Fire Station Coverage": {
-                problem: "Find the minimum time to reach any building from ANY fire station.",
-                solution: "Multi-Source BFS. Instead of starting BFS from one node, we push ALL fire stations into the queue initially with distance 0. Then run standard BFS.",
-                code: `queue<int> q;
+}`,
+        codeLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/",
+        datasetLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/"
+    },
+
+    "Fire Station Coverage": {
+        problem: "Find the minimum time to reach any building from ANY fire station.",
+        solution: "Multi-Source BFS. Push ALL stations into queue first at distance 0. Then run BFS.",
+        code: `queue<int> q;
 for(int station : stations) {
     q.push(station);
     dist[station] = 0;
@@ -2178,25 +2185,30 @@ while(!q.empty()) {
             q.push(v);
         }
     }
-}`
-            },
-            "Crime Hotspot Prediction": {
-                problem: "Classify a location as Safe or Risky based on K nearest historical crime reports.",
-                solution: "K-Nearest Neighbors (KNN). Calculate distance to all data points, sort by distance, pick top K, and vote.",
-                code: `// Simple KNN
-vector<pair<double, int>> distances;
+}`,
+        codeLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/",
+        datasetLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/"
+    },
+
+    "Crime Hotspot Prediction": {
+        problem: "Classify a location as Safe or Risky using K nearest historical crime reports.",
+        solution: "KNN Algorithm. Compute distances, sort, select top K, vote majority.",
+        code: `vector<pair<double, int>> distances;
 for(auto& p : data) {
     distances.push_back({ dist(query, p.coords), p.label });
 }
 sort(distances.begin(), distances.end());
 int riskCount = 0;
 for(int i=0; i<K; i++) if(distances[i].second == RISK) riskCount++;
-return (riskCount > K/2) ? RISK : SAFE;`
-            },
-            "Emergency Contact Lookup": {
-                problem: "Autocompleting names or addresses for dispatchers.",
-                solution: "Trie (Prefix Tree). Each node represents a character. Efficient for prefix-based searching.",
-                code: `struct TrieNode {
+return (riskCount > K/2) ? RISK : SAFE;`,
+        codeLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/",
+        datasetLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/"
+    },
+
+    "Emergency Contact Lookup": {
+        problem: "Autocompleting names/addresses quickly during emergency calls.",
+        solution: "Trie (Prefix Tree). Efficient for prefix queries.",
+        code: `struct TrieNode {
     TrieNode *children[26];
     bool isEndOfWord;
 };
@@ -2209,12 +2221,15 @@ void insert(TrieNode *root, string key) {
         pCrawl = pCrawl->children[index];
     }
     pCrawl->isEndOfWord = true;
-}`
-            },
-            "Hospital Bed Management": {
-                problem: "Schedule as many surgeries as possible in a specific operating room given start and end times.",
-                solution: "Interval Scheduling (Greedy). Sort requests by FINISH time. Always pick the next request that starts after the last one finished.",
-                code: `sort(intervals.begin(), intervals.end(), compareEndTime);
+}`,
+        codeLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/",
+        datasetLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/"
+    },
+
+    "Hospital Bed Management": {
+        problem: "Schedule maximum surgeries without overlap.",
+        solution: "Greedy Interval Scheduling. Sort by finish time.",
+        code: `sort(intervals.begin(), intervals.end(), compareEndTime);
 int count = 1;
 int last_end = intervals[0].end;
 for(int i=1; i<n; i++) {
@@ -2222,51 +2237,66 @@ for(int i=1; i<n; i++) {
         count++;
         last_end = intervals[i].end;
     }
-}`
-            },
-            "Dispatch Logs": {
-                problem: "Keep exactly the last K calls for auditing.",
-                solution: "Circular Queue (Ring Buffer). A fixed-size array where the 'next' pointer wraps around to 0 after reaching the end.",
-                code: `void enqueue(int val) {
+}`,
+        codeLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/",
+        datasetLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/"
+    },
+
+    "Dispatch Logs": {
+        problem: "Store the last K emergency calls only.",
+        solution: "Circular Queue (Ring Buffer). Overwrites oldest when full.",
+        code: `void enqueue(int val) {
     if ((rear + 1) % size == front) return; // Full
     if (front == -1) front = 0;
     rear = (rear + 1) % size;
     arr[rear] = val;
-}`
-            },
-            "Disaster Evacuation": {
-                problem: "Calculate shortest paths between ALL pairs of districts and shelters to plan flexible evacuation routes.",
-                solution: "Floyd-Warshall Algorithm. Dynamic programming approach to find all-pairs shortest paths.",
-                code: `for (k = 0; k < V; k++) {
+}`,
+        codeLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/",
+        datasetLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/"
+    },
+
+    "Disaster Evacuation": {
+        problem: "Compute shortest evacuation routes between ALL districts.",
+        solution: "Floyd-Warshall Algorithm (All-pairs shortest path).",
+        code: `for (k = 0; k < V; k++) {
     for (i = 0; i < V; i++) {
         for (j = 0; j < V; j++) {
             if (dist[i][k] + dist[k][j] < dist[i][j])
                 dist[i][j] = dist[i][k] + dist[k][j];
         }
     }
-}`
-            },
-            "Duplicate Incident Filtering": {
-                problem: "Many people call 911 for the same fire. We need to ignore duplicates.",
-                solution: "HashSet. Store hashes of active incidents (e.g., location_grid_id + type). Check existence in O(1).",
-                code: `unordered_set<string> activeIncidents;
+}`,
+        codeLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/",
+        datasetLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/"
+    },
+
+    "Duplicate Incident Filtering": {
+        problem: "Multiple callers may report the same fire. Avoid duplicate dispatch.",
+        solution: "HashSet to check if incident already active.",
+        code: `unordered_set<string> activeIncidents;
 string id = to_string(x) + "_" + to_string(y) + "_" + type;
 if(activeIncidents.find(id) == activeIncidents.end()) {
     activeIncidents.insert(id);
     dispatch();
-}`
-            },
-            "Medical Data Access": {
-                problem: "Ambulance tablets have limited memory. Keep the most recently accessed patient records.",
-                solution: "LRU Cache. Use a Hash Map + Doubly Linked List. Map stores iterators to the list nodes. Move accessed node to front of list.",
-                code: `class LRUCache {
+}`,
+        codeLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/",
+        datasetLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/"
+    },
+
+    "Medical Data Access": {
+        problem: "Store most recently accessed patient records on tablets.",
+        solution: "LRU Cache (HashMap + Doubly Linked List).",
+        code: `class LRUCache {
     list<int> dq;
     unordered_map<int, list<int>::iterator> ma;
     // get: move iterator to front of list
     // put: if full, pop back of list, push front
-};`
-            }
-        };
+};`,
+        codeLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/",
+        datasetLink: "https://chinmay-workdesign.github.io/Project-Swarna-Nagar/"
+    }
+};
+
 
         // --- Init ---
         window.addEventListener('popstate', (event) => {
@@ -2288,6 +2318,7 @@ if(activeIncidents.find(id) == activeIncidents.end()) {
     </script>
 </body>
 </html>
+
 
 
 
